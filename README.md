@@ -59,4 +59,4 @@ O fluxo de comunicação entre os atores do sistema (usuário, front-end, back-e
 
 ## Demonstração do Projeto
 
-**[Assista ao nosso vídeo de apresentação clicando aqui](https://youtu.be/0Srws2ukES0)**
+**[Assista ao nosso vídeo de apresentação clicando aqui](https://youtu.be/ZYf1s8ssiHQ)**
