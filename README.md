@@ -55,7 +55,7 @@ O fluxo de comunicação entre os atores do sistema (usuário, front-end, back-e
 ### Diagrama Arquitetural da Solução
 *(Nota: Lembre-se de colocar o arquivo de imagem exportado do Draw.io dentro da pasta do repositório no GitHub e alterar o nome do arquivo na linha abaixo)*
 
-![Fluxo da Arquitetura](https://drive.google.com/file/d/1RC9h_607KHfErIiyqU3kk77gZ631Q5vh/view?usp=drive_link)
+[Fluxo da Arquitetura](https://drive.google.com/file/d/1RC9h_607KHfErIiyqU3kk77gZ631Q5vh/view?usp=sharing)
 
 ## Demonstração do Projeto
 
