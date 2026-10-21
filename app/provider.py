@@ -61,24 +61,54 @@ class GeminiProvider:
         try:
             async with asyncio.timeout(self.settings.timeout_seconds):
                 async with httpx.AsyncClient(
-                    timeout=self.settings.timeout_seconds, transport=self.transport
+                    timeout=self.settings.timeout_seconds,
+                    transport=self.transport,
                 ) as client:
-                    response = await client.post(
-                        url, headers={"x-goog-api-key": self.settings.gemini_api_key},
-                        json=payload,
-                    )
-        except (httpx.TimeoutException, TimeoutError) as exc:
-            raise HTTPException(504, "A IA demorou para responder. Tente novamente.") from exc
-        except httpx.RequestError as exc:
-            raise HTTPException(503, "Não foi possível conectar ao provedor de IA.") from exc
+                    for tentativa in range(2):
+                        response = await client.post(
+                            url,
+                            headers={
+                                "x-goog-api-key": self.settings.gemini_api_key
+                            },
+                            json=payload,
+                        )
 
-        # Não propagar corpo do provedor: pode incluir dados da requisição/chaves.
+                        if response.status_code != 503:
+                            break
+
+                        if tentativa == 0:
+                            print(
+                                "[Gemini] Serviço indisponível. "
+                                "Tentando novamente em 2 segundos...",
+                                flush=True,
+                            )
+                            await asyncio.sleep(2)
+
+        except (httpx.TimeoutException, TimeoutError) as exc:
+            raise HTTPException(
+                504,
+                "A IA demorou para responder. Tente novamente."
+            ) from exc
+
+        except httpx.RequestError as exc:
+            raise HTTPException(
+                503,
+                "Não foi possível conectar ao provedor de IA."
+            ) from exc
+
         if response.status_code == 429:
             raise HTTPException(503, "Cota ou limite do provedor atingido. Tente mais tarde.")
         if response.status_code in (400, 401, 403, 404):
             raise HTTPException(503, "Confira a chave, o modelo e o acesso à API Gemini no servidor.")
         if response.is_error:
-            raise HTTPException(502, "O provedor de IA retornou uma falha.")
+            print(
+                f"[Gemini] Erro HTTP recebido: {response.status_code}",
+                flush=True,
+            )
+            raise HTTPException(
+                502,
+                "O provedor de IA retornou uma falha."
+            )
         try:
             body = response.json()
             candidate = body["candidates"][0]
